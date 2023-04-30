@@ -208,7 +208,7 @@ class CATSeg(nn.Module):
         global_output = outputs[-1:]
         global_output = F.interpolate(global_output, size=out_res, mode='bilinear', align_corners=False,)
         outputs = outputs[:-1]
-        outputs = fold(outputs.flatten(1).T) / fold(unfold(torch.ones([1] + out_res, device=self.device)))
+        outputs = fold(outputs.flatten(1).T) / fold(unfold(torch.ones([1, 1] + out_res, device=self.device)))
         outputs = (outputs + global_output) / 2.
 
         height = batched_inputs[0].get("height", out_res[0])

@@ -203,7 +203,7 @@ class ResidualAttentionBlock(nn.Module):
         y = F.linear(y, self.attn.out_proj.weight, self.attn.out_proj.bias)
         
         q, k, v = y.tensor_split(3, dim=0)
-        v = v.transpose(1, 0) + x # L N D
+        v = v.transpose(1, 0) + x[:1]   # L N D  small modification; better performance
 
         v = v + self.mlp(self.ln_2(v))
 
@@ -392,6 +392,23 @@ class VisionTransformer(nn.Module):
     def set_grad_checkpointing(self, enable=True):
         self.transformer.grad_checkpointing = enable
 
+    def resized_pos_embed(self, in_res, tgt_res, mode="bicubic"):
+        # assert L == (input_resolution // self.patch_size) ** 2 + 1
+        L, D = self.positional_embedding.shape
+
+        in_side = in_res // self.patch_size[0]
+        # tgt_side = tgt_res // self.patch_size
+        tgt_side = int((tgt_res - 1) ** 0.5)
+
+        cls_pos = self.positional_embedding[0].unsqueeze(0)  # 1 D
+        pos_embed = self.positional_embedding[1:].reshape(1, in_side, in_side, D).permute(0, 3, 1,
+                                                                                          2)  # L-1 D -> 1 D S S
+        resized_pos_embed = F.interpolate(pos_embed, size=(tgt_side, tgt_side), mode=mode,
+                                          align_corners=False, )  # 1 D S S -> 1 D S' S'
+        resized_pos_embed = resized_pos_embed.squeeze(0).reshape(D, -1).T  # L'-1 D
+
+        return torch.cat((cls_pos, resized_pos_embed), dim=0)
+
     def forward(self, x: torch.Tensor, dense=False):
         x = self.conv1(x)  # shape = [*, width, grid, grid]
         x = x.reshape(x.shape[0], x.shape[1], -1)  # shape = [*, width, grid ** 2]
@@ -399,8 +416,11 @@ class VisionTransformer(nn.Module):
         x = torch.cat(
             [self.class_embedding.to(x.dtype) + torch.zeros(x.shape[0], 1, x.shape[-1], dtype=x.dtype, device=x.device),
              x], dim=1)  # shape = [*, grid ** 2 + 1, width]
-        x = x + self.positional_embedding.to(x.dtype)
-
+        # x = x + self.positional_embedding.to(x.dtype)
+        if dense and (x.shape[1] != self.positional_embedding.shape[0]):
+            x = x + self.resized_pos_embed(self.image_size[0], x.shape[1]).to(x.dtype)
+        else:
+            x = x + self.positional_embedding.to(x.dtype)
         # a patch_dropout of 0. would mean it is disabled and this function would do nothing but return what was passed in
         x = self.patch_dropout(x)
         x = self.ln_pre(x)

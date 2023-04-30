@@ -77,7 +77,7 @@ class CATSeg(nn.Module):
                 params.requires_grad = finetune_backbone
 
         self.sliding_window = sliding_window
-        self.clip_resolution = (384, 384) if clip_pretrained == "ViT-B/16" else (336, 336)
+        self.clip_resolution = (384, 384) if clip_pretrained == "ViT-B-16" else (336, 336)
         self.sequential = False
 
     @classmethod

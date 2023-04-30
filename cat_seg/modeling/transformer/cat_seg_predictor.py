@@ -76,7 +76,8 @@ class CATSegPredictor(nn.Module):
             clip_model, _, clip_preprocess = open_clip.create_model_and_transforms(
                 model_name=clip_pretrained,
                 pretrained=clip_pretrained_from,
-                cache_dir=clip_cache_dir
+                cache_dir=clip_cache_dir,
+                device=device,
             )
 
             self.tokenizer = open_clip.get_tokenizer(clip_pretrained)

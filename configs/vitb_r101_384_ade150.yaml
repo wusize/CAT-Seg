@@ -3,5 +3,8 @@ MODEL:
   META_ARCHITECTURE: "CATSeg"
   SEM_SEG_HEAD:
     TEST_CLASS_JSON: "datasets/ade150.json"
+    POOLING_SIZES: [1,1]
 DATASETS:
   TEST: ("ade20k_150_test_sem_seg",)
+TEST:
+  SLIDING_WINDOW: True

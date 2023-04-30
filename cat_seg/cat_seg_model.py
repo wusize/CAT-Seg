@@ -180,8 +180,8 @@ class CATSeg(nn.Module):
         unfold = nn.Unfold(kernel_size=kernel, stride=stride)
         fold = nn.Fold(out_res, kernel_size=kernel, stride=stride)
 
-        image = F.interpolate(images[0].unsqueeze(0), size=out_res, mode='bilinear', align_corners=False).squeeze()
-        image = rearrange(unfold(image), "(C H W) L-> L C H W", C=3, H=kernel)
+        image = F.interpolate(images[0].unsqueeze(0), size=out_res, mode='bilinear', align_corners=False)  # .squeeze()
+        image = rearrange(unfold(image)[0], "(C H W) L-> L C H W", C=3, H=kernel)
         global_image = F.interpolate(images[0].unsqueeze(0), size=(kernel, kernel), mode='bilinear', align_corners=False)
         image = torch.cat((image, global_image), dim=0)
 

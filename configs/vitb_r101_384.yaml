@@ -4,7 +4,7 @@ MODEL:
   BACKBONE:
     FREEZE_AT: 0
     NAME: "build_resnet_backbone"
-  WEIGHTS: "R-101.pkl"
+  WEIGHTS: "checkpoints/R-101.pkl"
   RESNETS:
     DEPTH: 101
     STEM_TYPE: "basic" 
@@ -20,7 +20,7 @@ MODEL:
     NUM_CLASSES: 171
     TRAIN_CLASS_JSON: "datasets/coco.json"
     TEST_CLASS_JSON: "datasets/coco.json"
-    CLIP_PRETRAINED: "ViT-B/16"
+    CLIP_PRETRAINED: "ViT-B-16"
     PROMPT_DEPTH: 0
     PROMPT_LENGTH: 0
     TEXT_GUIDANCE_DIM: 512

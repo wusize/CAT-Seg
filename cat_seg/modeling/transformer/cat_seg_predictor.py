@@ -41,6 +41,8 @@ class CATSegPredictor(nn.Module):
         feature_resolution: tuple,
         window_sizes: tuple,
         attention_type: str,
+        clip_pretrained_from='openai',
+        clip_cache_dir='checkpoints'
     ):
         """
         Args:
@@ -71,8 +73,18 @@ class CATSegPredictor(nn.Module):
         
             self.tokenizer = open_clip.get_tokenizer(name)
         else:
-            # for OpenAI models
-            clip_model, clip_preprocess = clip.load(clip_pretrained, device=device, jit=False, prompt_depth=prompt_depth, prompt_length=prompt_length)
+            clip_model, _, clip_preprocess = open_clip.create_model_and_transforms(
+                model_name=clip_pretrained,
+                pretrained=clip_pretrained_from,
+                cache_dir=clip_cache_dir
+            )
+
+            self.tokenizer = open_clip.get_tokenizer(clip_pretrained)
+        # else:
+        #     # for OpenAI models
+        #     clip_model, clip_preprocess = clip.load(clip_pretrained, device=device, jit=False,
+        #                                             prompt_depth=prompt_depth, prompt_length=prompt_length,
+        #                                             )
     
         self.prompt_ensemble_type = prompt_ensemble_type        
 
@@ -116,6 +128,8 @@ class CATSegPredictor(nn.Module):
         ret["train_class_json"] = cfg.MODEL.SEM_SEG_HEAD.TRAIN_CLASS_JSON
         ret["test_class_json"] = cfg.MODEL.SEM_SEG_HEAD.TEST_CLASS_JSON
         ret["clip_pretrained"] = cfg.MODEL.SEM_SEG_HEAD.CLIP_PRETRAINED
+        ret["clip_pretrained_from"] = cfg.MODEL.SEM_SEG_HEAD.CLIP_PRETRAINED_FROM
+        ret["clip_cache_dir"] = cfg.MODEL.SEM_SEG_HEAD.CLIP_CACHE_DIR
         ret["prompt_ensemble_type"] = cfg.MODEL.PROMPT_ENSEMBLE_TYPE
 
         # Aggregator parameters:

@@ -59,7 +59,10 @@ def add_cat_seg_config(cfg):
     cfg.MODEL.SEM_SEG_HEAD.TRAIN_CLASS_INDEXES = "datasets/coco/coco_stuff/split/seen_indexes.json"
     cfg.MODEL.SEM_SEG_HEAD.TEST_CLASS_INDEXES = "datasets/coco/coco_stuff/split/unseen_indexes.json"
 
-    cfg.MODEL.SEM_SEG_HEAD.CLIP_PRETRAINED = "ViT-B/16"
+    cfg.MODEL.SEM_SEG_HEAD.CLIP_PRETRAINED = "ViT-B-16"
+
+    cfg.MODEL.SEM_SEG_HEAD.CLIP_PRETRAINED_FROM = 'openai'
+    cfg.MODEL.SEM_SEG_HEAD.CLIP_CACHE_DIR = 'checkpoints'
 
     cfg.MODEL.PROMPT_ENSEMBLE = False
     cfg.MODEL.PROMPT_ENSEMBLE_TYPE = "single"

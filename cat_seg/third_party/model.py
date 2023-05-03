@@ -199,7 +199,7 @@ class ResidualAttentionBlock(nn.Module):
         y = F.linear(y, self.attn.out_proj.weight, self.attn.out_proj.bias)
         
         q, k, v = y.tensor_split(3, dim=0)
-        v = v.transpose(1, 0) + x[:1]  # L N D
+        v = v.transpose(1, 0) + x  # L N D
 
         v = v + self.mlp(self.ln_2(v))
         return v

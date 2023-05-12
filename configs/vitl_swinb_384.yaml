@@ -14,7 +14,7 @@ MODEL:
     PATCH_NORM: True
     PRETRAIN_IMG_SIZE: 384
     OUT_FEATURES: ["res2", "res3", "res4"]
-  WEIGHTS: "swin_base_patch4_window12_384_22k.pkl"
+  WEIGHTS: "checkpoints/swin_base_patch4_window12_384_22k.pkl"
   PIXEL_MEAN: [123.675, 116.280, 103.530]
   PIXEL_STD: [58.395, 57.120, 57.375]
   SEM_SEG_HEAD:
@@ -24,7 +24,7 @@ MODEL:
     NUM_CLASSES: 171
     TRAIN_CLASS_JSON: "datasets/coco.json"
     TEST_CLASS_JSON: "datasets/coco.json"
-    CLIP_PRETRAINED: "ViT-L/14@336px"
+    CLIP_PRETRAINED: "ViT-L-14-336"
     PROMPT_DEPTH: 0
     PROMPT_LENGTH: 0
     TEXT_GUIDANCE_DIM: 768

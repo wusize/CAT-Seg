@@ -68,5 +68,12 @@ class CATSegHead(nn.Module):
             img_feats: (B, C, HW)
             affinity_features: (B, C, )
         """
-        img_feat = rearrange(features[:, 1:, :], "b (h w) c->b c h w", h=self.feature_resolution[0], w=self.feature_resolution[1])
+        feat_size = features.shape[1] - 1
+        feat_size = int(feat_size ** 0.5)
+        img_feat = rearrange(features[:, 1:, :], "b (h w) c->b c h w", h=feat_size, w=feat_size)
+        img_feat = F.interpolate(img_feat,
+                                 size=(self.feature_resolution[0], self.feature_resolution[1]),
+                                 mode="bilinear",
+                                 align_corners=False)
+
         return self.predictor(img_feat, guidance_features)
